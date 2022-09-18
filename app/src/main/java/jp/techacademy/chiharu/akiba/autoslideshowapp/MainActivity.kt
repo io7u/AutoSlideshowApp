@@ -125,6 +125,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
                         imageView.setImageURI(imageUri)
                     }
                 }
+            }
             } else if (v.id == R.id.slideshow_button) {
                 if (mTimer == null) {
                     mTimer = Timer()  //タイマーの作成
@@ -136,44 +137,47 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
                     mTimer!!.schedule(object : TimerTask() {
                         override fun run() {
                             mTimerSec += 2.0 //タイマー用の時間
-                            mHandler.post {         //HandlerクラスのインスタンスmHandler
-                                if (cursor!!.moveToNext()) {
-                                    val fieldIndex =
-                                        cursor!!.getColumnIndex(MediaStore.Images.Media._ID)
-                                    val id = cursor!!.getLong(fieldIndex)
-                                    val imageUri = ContentUris.withAppendedId(
-                                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                        id
-                                    )
-                                    imageView.setImageURI(imageUri)
+                            mHandler.post {       //HandlerクラスのインスタンスmHandler
+                                if (cursor != null) {
+                                    if (cursor!!.moveToNext()) {
+                                        val fieldIndex =
+                                            cursor!!.getColumnIndex(MediaStore.Images.Media._ID)
+                                        val id = cursor!!.getLong(fieldIndex)
+                                        val imageUri = ContentUris.withAppendedId(
+                                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                            id
+                                        )
+                                        imageView.setImageURI(imageUri)
 
-                                } else {
-                                    cursor!!.moveToFirst()
-                                    val fieldIndex =
-                                        cursor!!.getColumnIndex(MediaStore.Images.Media._ID)
-                                    val id = cursor!!.getLong(fieldIndex)
-                                    val imageUri = ContentUris.withAppendedId(
-                                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                        id
-                                    )
-                                    imageView.setImageURI(imageUri)
+                                    } else {
+                                        cursor!!.moveToFirst()
+                                        val fieldIndex =
+                                            cursor!!.getColumnIndex(MediaStore.Images.Media._ID)
+                                        val id = cursor!!.getLong(fieldIndex)
+                                        val imageUri = ContentUris.withAppendedId(
+                                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                            id
+                                        )
+                                        imageView.setImageURI(imageUri)
+                                    }
                                 }
                             }
                         }
-                    }, 2000, 2000)  //最初に始動させるまで2000ミリ秒、2秒毎にスライドさせる、ループの間隔を2000ミリ秒に設定
+                        }, 2000, 2000)  //最初に始動させるまで2000ミリ秒、2秒毎にスライドさせる、ループの間隔を2000ミリ秒に設定
                 } else {
                     slideshow_button.text = "再生"
                     mTimer!!.cancel()
                     susumu_button.isEnabled = true
                     modoru_button.isEnabled = true
+
                     if (mTimer != null) {
+                        mTimer!!.cancel()
                         mTimer = null
                     }
                 }
             }
         }
     }
-}
 
 
 
